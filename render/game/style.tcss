@@ -1,0 +1,140 @@
+Static {
+    color: white;
+}
+
+#container-game{
+    layout: grid;
+    /* 3 Columnas y 2 filas */
+    grid-size: 3 2;
+
+    /* La altura de las 2 filas: arriba y abajo */
+    grid-rows: 1fr 9; 
+    
+    /* Tamano de las 3 columnas */
+    grid-columns: 1fr 3fr 1fr;
+    grid-gutter: 0;
+    padding: 0;
+}
+
+/* Folder: Ocupa 1 columna y 2 filas */
+#panel-folder {
+    border: double brown;
+    column-span: 1;
+    row-span: 2; 
+    background: rgb(26, 26, 26);
+}
+
+#panel-folder Tree{
+    background: rgb(26, 26, 26);
+    color: rgba(0, 255, 13, 0.7);
+}
+
+#panel-folder Tree:focus{
+    background: rgba(26, 26, 26, 0);
+}
+
+#panel-folder Tree:blur {
+    color: green;
+}
+
+#panel-folder .tree--highlight-line{
+    background: rgb(24, 47, 24);
+}
+
+#panel-folder .tree--cursor{
+    background: rgb(24, 47, 24);
+    color: rgba(0, 255, 13, 0.8);
+}
+
+
+/* 2. Logs: Se queda en su celda normal (Fila 1, Columna 2) */
+#panel-log {
+    border: round rgb(186, 184, 173) ;
+    scrollbar-gutter: stable;
+    scrollbar-size: 0 0;
+    
+    /* (10, 10, 15) PUEDE SER TAMBIEN ESTE FONDO */
+    background: rgb(16, 22, 16);
+    
+    /* (102, 255, 102) PARA LAS LETRAS BOLD*/
+    color: rgb(51, 204, 51); 
+    
+    margin: 0;
+}
+
+
+/* 3. Dash-Board: Se queda en su celda normal (Fila 1, Columna 3) */
+#panel-dashboard {
+    border: double orange;
+}
+
+#dashboard-title{
+    content-align: center top;
+    color: orange;
+}
+
+#dashboard-memory{
+    border: round orange;
+    margin: 2;
+    content-align: center top;
+    border-title-style: bold;
+}
+
+#container-hackback{
+    padding: 2 ;
+}
+
+#dashboard-hackback{
+    border: round orange;
+    margin: 0 ;
+    content-align: center top;
+    border-title-style: bold;
+}
+
+#container-bg-thread{
+    border: blank;
+    margin: 0 0;
+    padding: -2 0;
+}
+
+#dashboard-bg-thread{
+    border: round orange;
+    height: 90%;
+    margin: 0 1;
+    padding: 1 1;
+    border-title-style: bold;
+}
+
+#dashboard-bg-thread Static{
+    margin: 0 0 1 0
+}
+
+/* 4. Terminal: ocupa 2 columnas y 1 fila */
+#panel-terminal {
+    column-span: 2;
+    row-span: 1; 
+    height: 100%;
+    border: double green;
+    background: #1e1e1e;
+}
+
+#terminal-log{
+    border: blank;
+    color: orange;
+    scrollbar-gutter: stable;
+    scrollbar-size: 0 0;
+}
+
+
+#terminal-input{
+    border: hidden;
+    width: 100%;
+    color: orange;
+    padding: 1 2;
+}
+
+/* Estilos globales para los marcadores de posición */
+Placeholder {
+    color: $text;
+    height: 100%;
+}

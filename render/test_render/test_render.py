@@ -2,8 +2,14 @@ from textual.widgets import *
 from textual.containers import *
 from textual.app import App, ComposeResult
 
+#from engine.player import Player
+
 class TestApp(App):
     
+    def __init__(self):
+        super().__init__()
+        #self.player = Player
+
     CSS_PATH = "style.tcss"
 
     def compose(self) -> ComposeResult:
@@ -39,7 +45,8 @@ class TestApp(App):
 
             
             # 2. Panel Central Superior (Logs)
-            yield RichLog(id="panel-log", auto_scroll=True)
+            yield RichLog(id="panel-log", max_lines=None, auto_scroll=True)
+
             
             # 3. Panel Derecho (Dash-Board)
             with Vertical(id="panel-dashboard"):
@@ -60,27 +67,25 @@ class TestApp(App):
                             yield Static("Proceso 4: 0%")
             
             # 4. Panel Inferior (Terminal)
-            with Vertical(id="panel-terminal"):
-                # Aquí se irán mostrando los comandos ejecutados y outputs
-                yield RichLog(id="terminal-log", max_lines=None, auto_scroll=True)
-                # La línea de comandos real abajo
+            with Horizontal(id="panel-terminal"):
+                yield Label("C:/Users/.../Download>", id="lbl-prompt-path")
                 yield Input(placeholder="Introduce un comando...", id="terminal-input")
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
-            # 1. Obtenemos el texto que escribió el usuario
-            comando = event.value.strip()
+            comando = event.value.strip().lower
 
             if not comando:
-                return  # Si presionó enter vacío, no hacemos nada
+                return
 
-            # 2. Obtenemos referencias a los widgets
-            terminal_log = self.query_one("#terminal-log", RichLog)
+            terminal_log = self.query_one("#panel-log", RichLog)
             terminal_input = self.query_one("#terminal-input", Input)
 
-            # 3. Añadimos el comando al historial (puedes meterle colores estilo terminal)
-            terminal_log.write(f"usuario@hackingnet:~# {comando}")
+            # Se agrega el comando al historial
+            #terminal_log.write(f"{self.player.name}@hackingnet:~# {comando}")
+            terminal_log.write(f"Anibal@hackingnet:~# {comando}")
+            
 
-            # 4. Aquí es donde procesas el comando en tu juego
+            # Se procesan los comandos
             if comando == "help":
                 terminal_log.write(" Comandos disponibles: help, status, clear, exit")
             elif comando == "clear":
@@ -88,7 +93,6 @@ class TestApp(App):
             else:
                 terminal_log.write(f" Error: Comando '{comando}' no reconocido.")
 
-            # 5. Limpiamos el Input para el siguiente comando
             terminal_input.value = ""
 
     def on_mount(self,) -> None:

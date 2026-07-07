@@ -1,0 +1,1 @@
+Esta carpeta contrendra las carpetas y archivos que utilizara el jugador para poder navegar entre directorios y jugar

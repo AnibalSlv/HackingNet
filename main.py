@@ -1,12 +1,12 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Header, Footer, Input, TabbedContent, TabPane, Static
-from render.render_red import RenderRed
-from render.render_profile import RenderProfile
-from render.game.render_game import RenderGame
+from textual.widgets import Input, TabbedContent
 
-from commands.global_commands import command_global
-
+from commands.terminal import Terminal
 from engine.core import Core
+from render.game.render_game import RenderGame
+from render.render_profile import RenderProfile
+from render.render_red import RenderRed
+
 
 class AppNavegacionPorTexto(App):
     # Añadimos un poco de margen para que la interfaz respire visualmente
@@ -14,66 +14,51 @@ class AppNavegacionPorTexto(App):
     TabbedContent ContentTabs {
         display: none;
     }
-    Input {
-        margin: 1 2;
-    }
-    TabbedContent {
-        margin: 1 2;
-    }
     """
 
     def __init__(self):
         super().__init__()
         self.game = Core()
-        
+        self.terminal = Terminal()
 
     def compose(self) -> ComposeResult:
-        yield Header()
-                
         # El contenedor de pestañas con sus IDs definidos
         #! INITIAL ABRE POR DEFECTO LA PESTANA CON ESA ID
         with TabbedContent(initial="profile", id="windows"):
             yield RenderRed()
             yield RenderProfile(self.game.player)
             yield RenderGame()
-                
-        yield Footer()
 
     # Evento que se dispara al presionar Enter en el Input
     def on_input_submitted(self, event: Input.Submitted) -> None:
-
-        inputUser = event.value.strip().lower().split()
-
-        # 2. Obtenemos el widget de las pestañas
-        tabbed_content = self.query_one("#windows", TabbedContent)
-        
-        # 3. Definimos cuáles son los IDs válidos para evitar errores
-        pestanas_disponibles = ["red", "profile"]
-
-        command = inputUser[0]
-
-        if command in command_global:
-            if command == "cd":
-                if len(inputUser) < 2:
-                    self.notify("Debes especificar un destino. Ejemplo: cd perfil", severity="error")
-                    return
-                
-                destination = inputUser[1]
-                
-                if destination not in pestanas_disponibles:
-                    self.notify(
-                        f"Destino '{destination}' no válido. Prueba con el comando ls para ver los directorios.", 
-                        severity="warning"
-                    )
-                else:
-                    tabbed_content.active = destination
-
-            else:
-                execute_command = command_global[command]
-                execute_command(self)
-
-        # 4. Limpiamos el input para que pueda volver a escribir cómodamente
+        texto_usuario = event.value
+        result = self.terminal.execute(texto_usuario)
         event.input.value = ""
+
+        if not result:
+            return
+
+        # Manejo visual de errores y mensajes
+        if result.error:
+            self.notify(result.output, severity="error")
+        else:
+            self.notify(result.output)
+
+        # Manejo de cambio de pantalla
+        tabbed_content = self.query_one("#windows", TabbedContent)
+
+        # Cambia de ventana
+        if result.action == "CHANGE_TAB":
+            if result.target is not None:
+                tabbed_content.active = result.target
+
+            # Cambia de estado
+        elif result.action == "SWITCH_STATE":
+            if result.target == "game":
+                tabbed_content.active = "game"
+            elif result.target == "menu":
+                tabbed_content.active = "profile"
+
 
 if __name__ == "__main__":
     app = AppNavegacionPorTexto()

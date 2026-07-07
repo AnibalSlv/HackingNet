@@ -1,49 +1,35 @@
+from pathlib import Path
 from textual.widgets import *
 from textual.widgets import *
 from textual.containers import *
 from textual.app import ComposeResult
 
+from commands.terminal import Terminal
+from commands.state_game import GameState
+from engine.binary_search_tree import root_main
+from engine.player import Player
 class RenderGame(TabPane):
     def __init__(self, *args, **kwargs):
         super().__init__("Title" ,*args, id= "game", **kwargs)
         self.target_ip = None
+        self.root_node = root_main
+        self.player = Player()
 
-    CSS_PATH = "style.tcss"
+        self.terminal = Terminal()
+        self.terminal.change_state("game")
+
+    DEFAULT_CSS = (Path(__file__).parent / "style.tcss").read_text(encoding="utf-8")
 
     def compose(self) -> ComposeResult:
         with Container(id="container-game"):
             # 1. Panel Izquierdo (Folder)
             with Container(id="panel-folder"):
-                # 1. Creamos la raíz principal del sistema
-                tree: Tree[str] = Tree("Sistema_Red", id="mi-arbol")
-                tree.root.expand()
-
-                # 2. Primera carpeta principal (Characters) y sus archivos
-                characters = tree.root.add("Characters", expand=True)
-                characters.add_leaf("Paul.usr")
-                characters.add_leaf("Jessica.usr")
-                characters.add_leaf("Chani.usr")
-
-                # 3. Segunda carpeta principal (Logs) en el mismo nivel
-                logs_folder = tree.root.add("System_Logs", expand=False) # expand=False para que empiece cerrada
-                logs_folder.add_leaf("auth.log")
-                logs_folder.add_leaf("connections.json")
-
-                # 4. Tercera carpeta principal (Scripts de hackeo)
-                tools_folder = tree.root.add("Exploits", expand=True)
-                tools_folder.add_leaf("ssh_bruteforce.py")
-                tools_folder.add_leaf("port_scanner.go")
-
-                # 5. ¿Quieres una carpeta DENTRO de otra carpeta? (Subcarpeta)
-                subcarpeta_credenciales = tools_folder.add("Credentials", expand=False)
-                subcarpeta_credenciales.add_leaf("passwords.txt")
-
-                # Finalmente, haces el yield de ese único árbol que ya contiene todo
-                yield tree
+                yield DirectoryTree("engine/folder_of_game/prueba01")
 
             
             # 2. Panel Central Superior (Logs)
-            yield RichLog(id="panel-log", auto_scroll=True)
+            yield RichLog(id="panel-log", max_lines=None, auto_scroll=True)
+
             
             # 3. Panel Derecho (Dash-Board)
             with Vertical(id="panel-dashboard"):
@@ -64,36 +50,38 @@ class RenderGame(TabPane):
                             yield Static("Proceso 4: 0%")
             
             # 4. Panel Inferior (Terminal)
-            with Vertical(id="panel-terminal"):
-                # Aquí se irán mostrando los comandos ejecutados y outputs
-                yield RichLog(id="terminal-log", max_lines=None, auto_scroll=True)
-                # La línea de comandos real abajo
+            with Horizontal(id="panel-terminal"):
+                yield Label("", id="lbl-prompt-path")
                 yield Input(placeholder="Introduce un comando...", id="terminal-input")
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
-            # 1. Obtenemos el texto que escribió el usuario
-            comando = event.value.strip()
+        comando = event.value
 
-            if not comando:
-                return  # Si presionó enter vacío, no hacemos nada
+        if not comando:
+            return
 
-            # 2. Obtenemos referencias a los widgets
-            terminal_log = self.query_one("#terminal-log", RichLog)
-            terminal_input = self.query_one("#terminal-input", Input)
+        terminal_log = self.query_one("#panel-log", RichLog)
+        terminal_input = self.query_one("#terminal-input", Input)
+        terminal_lbl = self.query_one("#lbl-prompt-path", Label)
 
-            # 3. Añadimos el comando al historial (puedes meterle colores estilo terminal)
-            terminal_log.write(f"usuario@hackingnet:~# {comando}")
+        # 1. El motor procesa el comando en la capa lógica correspondiente (GameState, MenuState, etc.)
+        result = self.terminal.execute(comando)
 
-            # 4. Aquí es donde procesas el comando en tu juego
-            if comando == "help":
-                terminal_log.write(" Comandos disponibles: help, status, clear, exit")
-            elif comando == "clear":
-                terminal_log.clear()
-            else:
-                terminal_log.write(f" Error: Comando '{comando}' no reconocido.")
+        # 2. Pintamos la línea del Prompt en el Log (Estilo Linux)
+        terminal_log.write(f"{self.player.name}@hackingnet:~# {comando}")
 
-            # 5. Limpiamos el Input para el siguiente comando
-            terminal_input.value = ""
+        # 3. Dejamos que el motor decida qué imprimir en base al resultado
+        if result.error:
+            terminal_log.write(f" [red]Error: {result.output}[/red]")
+        else:
+            if result.output:
+                terminal_log.write(result.output)
+                if result.path != None:
+                    terminal_lbl.update(result.path)
+
+        # 4. Limpieza y fijación estricta del FOCO para evitar congelamientos de la UI
+        terminal_input.value = ""
+        event.input.focus()
 
     def on_mount(self,) -> None:
             lbl_hackback = self.query_one("#dashboard-hackback")

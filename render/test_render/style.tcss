@@ -8,7 +8,7 @@ Static {
     grid-size: 3 2;
 
     /* La altura de las 2 filas: arriba y abajo */
-    grid-rows: 1fr 9; 
+    grid-rows: 1fr 5; 
     
     /* Tamano de las 3 columnas */
     grid-columns: 1fr 3fr 1fr;
@@ -118,19 +118,23 @@ Static {
     background: #1e1e1e;
 }
 
-#terminal-log{
-    border: blank;
-    color: orange;
-    scrollbar-gutter: stable;
-    scrollbar-size: 0 0;
+#lbl-prompt-path{
+    color: #4af626;
+    padding: 1 0 0 1;
+    margin: 0;
 }
-
 
 #terminal-input{
     border: hidden;
     width: 100%;
     color: orange;
-    padding: 1 2;
+    padding: 1 1;
+    margin: 0;
+}
+
+#terminal-input:focus{
+    background: transparent;
+    color: lime;
 }
 
 /* Estilos globales para los marcadores de posición */

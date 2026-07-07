@@ -1,7 +1,7 @@
 from textual.widgets import *
 from render.game.render_game import RenderGame
 
-from commands.red_commands import command_red
+
 
 avalible_red = ["192.168.1.15"]
 
@@ -23,7 +23,7 @@ class RenderRed(TabPane):
         
         command = inputUser[0]
 
-        if command in command_red:
+        if command in "command_red":
             if len(inputUser) < 2:
                 self.notify("Debes especificar una red. Ejemplo: cat 123.456.7.8", severity="error")
                 return

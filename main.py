@@ -38,12 +38,6 @@ class AppNavegacionPorTexto(App):
         if not result:
             return
 
-        # Manejo visual de errores y mensajes
-        if result.error:
-            self.notify(result.output, severity="error")
-        else:
-            self.notify(result.output)
-
         # Manejo de cambio de pantalla
         tabbed_content = self.query_one("#windows", TabbedContent)
 

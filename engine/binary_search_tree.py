@@ -1,10 +1,9 @@
 import os
 from typing import Optional, Tuple
 
-from anytree.node import Node
+from anytree import NodeMixin
 from anytree.resolver import ChildResolverError, Resolver
 
-from anytree import NodeMixin
 
 class Node(NodeMixin):  # <--- Heredar de NodeMixin
     def __init__(self, name, father=None, children=None):

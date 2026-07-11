@@ -9,7 +9,7 @@ from render.render_red import RenderRed
 
 
 class AppNavegacionPorTexto(App):
-    # Añadimos un poco de margen para que la interfaz respire visualmente
+    # Se agrega un poco de margen para que la interfaz respire visualmente
     CSS = """
     TabbedContent ContentTabs {
         display: none;
@@ -46,7 +46,7 @@ class AppNavegacionPorTexto(App):
             if result.target is not None:
                 tabbed_content.active = result.target
 
-            # Cambia de estado
+        # Cambia de estado
         elif result.action == "SWITCH_STATE":
             if result.target == "game":
                 tabbed_content.active = "game"

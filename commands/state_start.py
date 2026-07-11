@@ -1,8 +1,13 @@
 from commands.definitions import CommandResult, TerminalState
+from engine.events.events_engine import EventsEngine
+from engine.events.manager_events import manager_events
 
 
 class MenuState(TerminalState):
     def __init__(self):
+        self.manager_events = manager_events
+        self.events = EventsEngine(manager_events)
+
         self.commands = {
             "cd": self._cd,
             "ls": self._ls,
@@ -24,6 +29,11 @@ class MenuState(TerminalState):
 
         destination = args[0]
         if destination == "game":
+            self.manager_events.function_start_backend = (
+                self.events.iniciar_simulacion()
+            )
+            self.manager_events.activate_backend()
+
             return CommandResult(
                 "Iniciando Juego...", action="SWITCH_STATE", target="game"
             )

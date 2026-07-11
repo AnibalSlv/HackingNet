@@ -1,7 +1,6 @@
 from commands.definitions import CommandResult, TerminalState
 from engine.binary_search_tree import Node, navegation_node, view_nodes
 
-
 class GameState(TerminalState):
     def __init__(self, node: Node):
         self.node_current = node
@@ -18,12 +17,6 @@ class GameState(TerminalState):
         result = view_nodes(self.node_current)
         output_formateado = "\n".join([nodo.name for nodo in result])
 
-        print("-" * 20)
-        print(
-            f"DEBUG: node_current={self.node_current} | tipo={type(result)} | contenido={result}"
-        )
-        print("-" * 20)
-
         return CommandResult(
             output=f"Elementos de {self.node_current.name}:\n{output_formateado}"
         )
@@ -34,10 +27,6 @@ class GameState(TerminalState):
             return CommandResult("Especifica un nodo.", error=True)
 
         target_node_name = args[0]
-
-        print("-"*30)
-        print(f"{target_node_name}")
-        print("-"*30)
 
         result = navegation_node(self.node_current, target_node_name)
 
@@ -53,4 +42,3 @@ class GameState(TerminalState):
         return CommandResult(
             "Saliendo del juego...", action="SWITCH_STATE", target="menu"
         )
-

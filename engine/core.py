@@ -5,4 +5,4 @@ class Core:
         self.player = Player()
 
     def buy_item(self) -> None:
-        self.player.money -= 10 
+        self.player.money -= 10

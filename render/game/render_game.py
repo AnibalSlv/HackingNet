@@ -9,6 +9,8 @@ from commands.terminal import Terminal
 from engine.binary_search_tree import root_main
 from engine.player import Player
 
+from engine.events.manager_events import manager_events
+from engine.events.dto_events import DTOEvents
 
 class RenderGame(TabPane):
     def __init__(self, *args, **kwargs):
@@ -17,10 +19,29 @@ class RenderGame(TabPane):
         self.root_node = root_main
         self.player = Player()
 
+        self.manager_events = manager_events
         self.terminal = Terminal()
         self.terminal.change_state("game")
 
     DEFAULT_CSS = (Path(__file__).parent / "style.tcss").read_text(encoding="utf-8")
+
+    # Actualiza la interfaz cuando se ejecuta un evento
+    def update_interface(self, data: DTOEvents):
+        lbl_hackback = self.query_one("#dashboard-hackback")
+        lbl_hackback.border_title = str(data.progress_event)
+
+    def on_mount(self) -> None:
+        # Suscribe el metodo update_interface para que los eventos tengas comunicacion con la UI
+        self.manager_events.add_suscribers(self.update_interface)
+
+        lbl_hackback = self.query_one("#dashboard-hackback")
+        lbl_hackback.border_title = "Hackback:"
+
+        lbl_hackback = self.query_one("#dashboard-memory")
+        lbl_hackback.border_title = "Memory:"
+
+        lbl_bg_thread = self.query_one("#dashboard-bg-thread")
+        lbl_bg_thread.border_title = "Process:"
 
     def compose(self) -> ComposeResult:
         with Container(id="container-game"):
@@ -83,16 +104,6 @@ class RenderGame(TabPane):
                     if result.path:
                         terminal_lbl.update(result.path)
 
-        # 4. Limpieza y fijación estricta del FOCO para evitar congelamientos de la UI
+        # Limpieza y fijación estricta del FOCO
         terminal_input.value = ""
         event.input.focus()
-
-    def on_mount(self) -> None:
-        lbl_hackback = self.query_one("#dashboard-hackback")
-        lbl_hackback.border_title = "Hackback:"
-
-        lbl_hackback = self.query_one("#dashboard-memory")
-        lbl_hackback.border_title = "Memory:"
-
-        lbl_bg_thread = self.query_one("#dashboard-bg-thread")
-        lbl_bg_thread.border_title = "Process:"

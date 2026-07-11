@@ -25,7 +25,7 @@ def map_folder_tree(path_current, node_father=None):
     # Crear el nodo actual
     node_current = Node(name_current, father=node_father)
 
-    # Si el nodo padre existe y tu clase no lo vincula automáticamente:
+    # Si el nodo padre existe y la clase no lo vincula automáticamente:
     if node_father is not None:
         node_current.parent = node_father
 
@@ -34,10 +34,9 @@ def map_folder_tree(path_current, node_father=None):
         try:
             for element in os.listdir(path_current):
                 path_son = os.path.join(path_current, element)
-                # LLAMADA RECURSIVA: Pasamos el nodo actual como padre
                 map_folder_tree(path_son, node_current)
         except PermissionError:
-            pass  # Ignorar carpetas sin acceso (ej. System Volume Information)
+            pass
 
     return node_current
 
@@ -52,14 +51,9 @@ def view_nodes(node) -> list:
     node_current = node
     node_list = []
 
-    print("-" * 30)
-    print("si -" * 30)
-    print(node.children)
     for children in node_current.children:
-        print(f"Este comando se ejecuta desde View node y {node_list}")
         node_list.append(children)
 
-    print("-" * 30)
     return node_list
 
 

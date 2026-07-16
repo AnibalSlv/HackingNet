@@ -1,11 +1,11 @@
-from textual.widgets import *
-from engine.core import Core
+from textual.widgets import Input, Static, TabPane
+
 
 class RenderProfile(TabPane):
     def __init__(self, player) -> None:
         super().__init__("Perfil", id="profile")
         self.player = player
-    
+
     def compose(self):
         yield Static("[bold green]Este es tu perfil[/]")
         yield Static("[bold green]=========================[/]")

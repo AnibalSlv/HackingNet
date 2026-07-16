@@ -1,45 +1,58 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from engine.events.dto_events import DTOEvents
 
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.containers import Container, Horizontal, Vertical
+from textual.message import Message
 from textual.widgets import DirectoryTree, Input, Label, RichLog, Static, TabPane
 
 from commands.terminal import Terminal
 from engine.binary_search_tree import root_main
+from engine.events.manager_events import manager_events
 from engine.player import Player
 
-from engine.events.manager_events import manager_events
-from engine.events.dto_events import DTOEvents
 
 class RenderGame(TabPane):
     def __init__(self, *args, **kwargs):
         super().__init__("Title", *args, id="game", **kwargs)
         self.target_ip = None
         self.root_node = root_main
-        self.player = Player()
 
-        self.manager_events = manager_events
+        self.player = Player()
         self.terminal = Terminal()
+        self.manager_events = manager_events
+
         self.terminal.change_state("game")
 
     DEFAULT_CSS = (Path(__file__).parent / "style.tcss").read_text(encoding="utf-8")
 
+    class RequestLoadGame(Message):
+        pass
+
     # Actualiza la interfaz cuando se ejecuta un evento
     def update_interface(self, data: DTOEvents):
-        lbl_hackback = self.query_one("#dashboard-hackback")
-        lbl_hackback.border_title = str(data.progress_event)
+        lbl_hackback = self.query_one("#dashboard-hackback", Static)
+        lbl_hackback.update((str(data.progress_event) + "%"))
 
-    def on_mount(self) -> None:
+    def on_show(self) -> None:
         # Suscribe el metodo update_interface para que los eventos tengas comunicacion con la UI
         self.manager_events.add_suscribers(self.update_interface)
 
+        # Inicia el nivel
+        self.post_message(self.RequestLoadGame())
+
+        # Refresca el directorio de carpetas que vee el usuario
+        tree = self.query_one(DirectoryTree)
+        tree.reload()
+
         lbl_hackback = self.query_one("#dashboard-hackback")
         lbl_hackback.border_title = "Hackback:"
-
         lbl_hackback = self.query_one("#dashboard-memory")
         lbl_hackback.border_title = "Memory:"
-
         lbl_bg_thread = self.query_one("#dashboard-bg-thread")
         lbl_bg_thread.border_title = "Process:"
 
@@ -47,7 +60,7 @@ class RenderGame(TabPane):
         with Container(id="container-game"):
             # 1. Panel Izquierdo (Folder)
             with Container(id="panel-folder"):
-                yield DirectoryTree("engine/folder_of_game/prueba01")
+                yield DirectoryTree("engine/folder_of_game/server")
 
             # 2. Panel Central Superior (Logs)
             yield RichLog(id="panel-log", max_lines=None, auto_scroll=True)

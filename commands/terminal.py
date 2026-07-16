@@ -1,16 +1,17 @@
 from typing import Optional
 
 from commands.definitions import CommandResult
-from commands.state_game import GameState
-from commands.state_start import MenuState
+from commands.game_input_state import GameInputState
+from commands.menu_input_state import MenuInputState
 from engine.binary_search_tree import root_main
 
 
 class Terminal:
     def __init__(self):
+
         self.states = {
-            "menu": MenuState(),
-            "game": GameState(root_main),
+            "menu": MenuInputState(),
+            "game": GameInputState(root_main),
         }
 
         self.current_state = self.states["menu"]

@@ -42,7 +42,7 @@ def map_folder_tree(path_current, node_father=None):
 
 
 # Carpeta contenedora
-root_main = map_folder_tree("engine/folder_of_game/prueba01")
+root_main = map_folder_tree("engine/folder_of_game/server")
 resolver = Resolver("name")
 
 

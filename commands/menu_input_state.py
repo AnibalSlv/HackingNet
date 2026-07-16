@@ -3,7 +3,7 @@ from engine.events.events_engine import EventsEngine
 from engine.events.manager_events import manager_events
 
 
-class MenuState(TerminalState):
+class MenuInputState(TerminalState):
     def __init__(self):
         self.manager_events = manager_events
         self.events = EventsEngine(manager_events)

@@ -1,6 +1,3 @@
-from engine.events.dto_events import DTOEvents
-
-
 class EventBasic:
     # Se preaparan los datos para el envio
 
@@ -8,8 +5,5 @@ class EventBasic:
 
     @classmethod
     def event_basic(cls):
-        data = DTOEvents(
-            event=f"Hackeando servidores... {cls.progress_x}%",
-            progress=100,
-        )
+        data = "contenido facil"
         return data

@@ -22,6 +22,8 @@ class RenderGame(TabPane):
         self.target_ip = None
         self.root_node = root_main
 
+        self.lbl_terminal_root = Label(str(self.root_node))
+
         self.player = Player()
         self.terminal = Terminal()
         self.manager_events = manager_events
@@ -85,25 +87,41 @@ class RenderGame(TabPane):
 
             # 4. Panel Inferior (Terminal)
             with Horizontal(id="panel-terminal"):
-                yield Label("", id="lbl-prompt-path")
+                yield Label("server>", id="lbl-prompt-path")
                 yield Input(placeholder="Introduce un comando...", id="terminal-input")
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
-        comando = event.value
+        command = event.value
+        new_command = None
 
-        if not comando:
+        if not command:
             return
 
         terminal_log = self.query_one("#panel-log", RichLog)
         terminal_input = self.query_one("#terminal-input", Input)
         terminal_lbl = self.query_one("#lbl-prompt-path", Label)
 
+        parts_command = command.split()
+
+        # Transforma la direccion para poder utilizarlo
+        if parts_command[0] == "cat":
+            parts_command[1] = (
+                "engine/folder_of_game/"
+                + str(self.lbl_terminal_root)
+                + "/"
+                + parts_command[1]
+            )
+            new_command = " ".join(parts_command)
+
+        if new_command is None:
+            new_command = command
+
         # El motor procesa el comando en la capa lógica correspondiente (GameState)
-        result = self.terminal.execute(comando)
+        result = self.terminal.execute(new_command)
 
         # Crea el texto parseando el markup para poder tener colores
         text_color = Text.from_markup(
-            f"[bold #ffffff]{self.player.name}[/][#777777]@hackingnet:~#[/] [#ffffff]{comando}[/]"
+            f"[bold #ffffff]{self.player.name}[/][#777777]@hackingnet:~#[/] [#ffffff]{command}[/]"
         )
         terminal_log.write(text_color)
 
@@ -115,7 +133,8 @@ class RenderGame(TabPane):
                 if result.output:
                     terminal_log.write(result.output)
                     if result.path:
-                        terminal_lbl.update(result.path)
+                        terminal_lbl.update(result.path + ">")
+                        self.lbl_terminal_root = result.path
 
         # Limpieza y fijación estricta del FOCO
         terminal_input.value = ""

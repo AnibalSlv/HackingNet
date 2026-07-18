@@ -1,6 +1,3 @@
-from engine.events.dto_events import DTOEvents
-
-
 class EventHalf:
     # Se preaparan los datos para el envio
 
@@ -8,8 +5,5 @@ class EventHalf:
 
     @classmethod
     def event_mid(cls):
-        data = DTOEvents(
-            event=f"Hackeando servidores... {cls.progress_x}%",
-            progress=200,
-        )
+        data = "contenido medio"
         return data

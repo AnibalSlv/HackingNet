@@ -1,6 +1,7 @@
 from commands.definitions import CommandResult, TerminalState
 from engine.archive_enc import archive_enc_real
 from engine.binary_search_tree import Node, navegation_node, view_nodes
+from utils.read_file import read
 
 
 class GameInputState(TerminalState):
@@ -45,7 +46,7 @@ class GameInputState(TerminalState):
             )
 
         self.node_current, path_str = result
-        return CommandResult(f"Ruta actual: {path_str}", path=f"{path_str}>")
+        return CommandResult(f"Ruta actual: {path_str}", path=f"{path_str}")
 
     def _cat(self, args: list[str]) -> CommandResult:
         if not args:
@@ -67,7 +68,7 @@ class GameInputState(TerminalState):
 
                 if input_password == password_file:
                     return CommandResult(
-                        f"Accediendo al archivo {name_file}...\n[CONTENIDO DESBLOQUEADO: password: {input_password}]"
+                        f"Accediendo al archivo {name_file}...\n[CONTENIDO DESBLOQUEADO: {read(name_file)}]"
                     )
                 else:
                     return CommandResult("Contraseña incorrecta.", error=True)

@@ -1,4 +1,8 @@
+from dataclasses import dataclass
+from typing import Optional
+
+
+@dataclass
 class DTOEvents:
-    def __init__(self, event, progress):
-        self.name_event: str = event
-        self.progress_event: int = progress
+    name_event: Optional[str] = None
+    progress_event: Optional[int] = None

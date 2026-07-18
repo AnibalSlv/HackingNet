@@ -9,7 +9,8 @@ class CommandResult:
     action: Optional[str] = None  # EJ: "CHANGE_TAB", "NORIFY"
     target: Optional[str] = None  # EJ: "game", "menu"
     data: Optional[dict] = None  # Datos adicionales, ej: {"target_ip": "192.168.1.1"}
-    path: Optional[str] = None # EJ: prueba01/user/...
+    path: Optional[str] = None  # EJ: prueba01/user/...
+    others: Optional[str] = None  # Otros datos como: Tarea completa
     error: bool = False
 
 

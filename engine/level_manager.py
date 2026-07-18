@@ -60,9 +60,10 @@ class LevelManager:
         # 2. Ahora sí, escribe la contraseña hardcodeada con seguridad
         file.write_text("password: 1234")
 
+        file_name = file.as_posix()
         # Se guardan los archivos encriptados para poder agregar status y password
         list_file_enc: dict[str, dict[str, str]] = {
-            file.name: {"status": "locked", "password": "1234"}
+            file_name: {"status": "locked", "password": "1234"}
         }
 
         # Retorna el diccionario para que el Core pueda tener acceso

@@ -29,27 +29,31 @@ class EventsEngine:
 
     def tick_simulacion(self):
         # Este método se ejecuta en bucle haciendo avanzar el juego
-
-        data = None
+        response = None
 
         if self.progress_hackback < 100:
-            self.progress_hackback += 5
+            self.progress_hackback += 1
 
             # Eventos "basicos"
             if self.progress_hackback > 0 and self.progress_hackback <= 30:
-                data = EventBasic.event_basic()
+                response = EventBasic.event_basic()
 
             # Eventos "medios"
             elif self.progress_hackback > 30 and self.progress_hackback <= 70:
-                data = EventHalf.event_mid()
+                response = EventHalf.event_mid()
 
             # Eventos "dificiles"
             elif self.progress_hackback > 70 and self.progress_hackback <= 100:
-                data = EventHard.event_hard()
+                response = EventHard.event_hard()
+
+        data = DTOEvents(
+            f"{response} {self.progress_hackback}%",
+            self.progress_hackback,
+        )
 
         if data is not None:
             # Envia los datos al gestor
             self.manager_events.send_events(data)
 
         # Nota: Es importante que no se cierre la funcion con () porque entonces se ejecuta
-        threading.Timer(5.0, self.tick_simulacion).start()
+        threading.Timer(1.0, self.tick_simulacion).start()

@@ -42,7 +42,7 @@ def map_folder_tree(path_current, node_father=None):
 
 
 # Carpeta contenedora
-root_main = map_folder_tree("engine/folder_of_game/server")
+root_main = None
 resolver = Resolver("name")
 
 
@@ -74,3 +74,21 @@ def navegation_node(start_node: Node, target_name: str) -> Optional[Tuple[Node, 
 
     # Retorna el nodo (para mantener la posición) y el str de guia
     return target_node, path_str
+
+
+def get_or_reload_tree():
+    global root_main
+    # Llama a la función que mapea las carpetas reales
+    root_main = map_folder_tree("engine/folder_of_game/server")
+    return root_main
+
+
+def get_current_root():
+    global root_main
+    if root_main is None:
+        return get_or_reload_tree()
+    return root_main
+
+
+# Inicialización por defecto
+get_or_reload_tree()

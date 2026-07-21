@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from engine.events.dto_events import DTOEvents
 
+import asyncio
+
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.containers import Container, Horizontal, Vertical
@@ -11,29 +13,40 @@ from textual.message import Message
 from textual.widgets import DirectoryTree, Input, Label, RichLog, Static, TabPane
 
 from commands.terminal import Terminal
-from engine.binary_search_tree import root_main
 from engine.events.manager_events import manager_events
 from engine.player import Player
+from utils.binary_search_tree import get_or_reload_tree
 
 
 class RenderGame(TabPane):
     def __init__(self, *args, **kwargs):
         super().__init__("Title", *args, id="game", **kwargs)
         self.target_ip = None
-        self.root_node = root_main
+        self.root_node = get_or_reload_tree
 
         self.lbl_terminal_root = Label(str(self.root_node))
 
         self.player = Player()
-        self.terminal = Terminal()
         self.manager_events = manager_events
 
+        self.terminal = Terminal()
         self.terminal.change_state("game")
 
     DEFAULT_CSS = (Path(__file__).parent / "style.tcss").read_text(encoding="utf-8")
 
     class RequestLoadGame(Message):
         pass
+
+    async def load_tree(self):
+        await asyncio.sleep(0.5)
+
+        node = get_or_reload_tree()
+
+        # Actualiza es estado de la clase "game para que tenga el nuevo nodo"
+        self.terminal.states["game"].set_current_node(node)
+
+        tree = self.query_one(DirectoryTree)
+        tree.reload()
 
     # Actualiza la interfaz cuando se ejecuta un evento
     def update_interface(self, data: DTOEvents):
@@ -48,8 +61,10 @@ class RenderGame(TabPane):
         self.post_message(self.RequestLoadGame())
 
         # Refresca el directorio de carpetas que vee el usuario
-        tree = self.query_one(DirectoryTree)
-        tree.reload()
+
+        # .run_worker() es la forma nativa que tiene textual para manejar procesos asincronos
+        # exclusive = false: Mantiene el proceso async anterior y ejecuta el nuevo en paralelo.
+        self.run_worker(self.load_tree(), exclusive=False)
 
         lbl_hackback = self.query_one("#dashboard-hackback")
         lbl_hackback.border_title = "Hackback:"

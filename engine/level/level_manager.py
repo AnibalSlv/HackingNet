@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from engine.level.folders import Bin, Data, Etc, Home, Root, Temp
 from engine.rng_manager import RNGManager
 
 
@@ -32,23 +33,20 @@ class LevelManager:
             "kamikaze", si no tiene tiempo de limpiar los rastros, tira el servidor pero quizas no obtenga la recompensa
     """
 
-    roots = ["etc", "var", "home", "root", "bin"]
-    sub_roots = {"/etc": [""]}
-
     def __init__(self, rng: RNGManager):
         self.rng = rng
+        self.temp_seed = 0
 
     def folder_of_game(self):
 
-        folder = Path("servidor")  # <--- Deberia de ser aleatorio
-        folder.mkdir(
-            exist_ok=True
-        )  # exist_ok evita errores si ya existe y crea la carpeta
+        base_path = "engine/folder_of_game/server/"
 
-        # Se crean las carpetas
-        for root in self.roots:
-            folder = Path("engine") / "folder_of_game" / "server" / root
-            folder.mkdir(parents=True, exist_ok=True)
+        Bin().generate_contents(base_path, self.temp_seed)
+        Data().generate_contents(base_path, self.temp_seed)
+        Etc().generate_contents(base_path, self.temp_seed)
+        Home().generate_contents(base_path, self.temp_seed)
+        Root().generate_contents(base_path, self.temp_seed)
+        Temp().generate_contents(base_path, self.temp_seed)
 
         # Se crea el archivo importante para terminar la partida
         file = (
@@ -60,6 +58,7 @@ class LevelManager:
         # 2. Ahora sí, escribe la contraseña hardcodeada con seguridad
         file.write_text("password: 1234")
 
+        # .as_posix() devuelve la posicion del archivo en un formato en el que se puede acceder (/)
         file_name = file.as_posix()
         # Se guardan los archivos encriptados para poder agregar status y password
         list_file_enc: dict[str, dict[str, str]] = {

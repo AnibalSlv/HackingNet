@@ -1,12 +1,17 @@
+from anytree.node.node import Node
+from typing_extensions import Optional
+
 from commands.definitions import CommandResult, TerminalState
 from engine.archive_enc import archive_enc_real
-from engine.binary_search_tree import Node, navegation_node, view_nodes
+from utils.binary_search_tree import navegation_node, view_nodes
 from utils.read_file import read
 
 
+# BUG: hay un error en el que se crean 2 objetos, 1 con el nodo antiguo y otro con el nodo actualizado
+# sucede cuando el render_game cambia el valor
 class GameInputState(TerminalState):
-    def __init__(self, node: Node):
-        self.node_current = node
+    def __init__(self):
+        self.node_current: Optional[Node] = None
 
         self.arcvhibe_enc = archive_enc_real
         self.commands = {
@@ -17,10 +22,19 @@ class GameInputState(TerminalState):
         }
 
     def execute(self, command: str, args: list[str]) -> CommandResult:
+        if self.node_current is None:
+            return CommandResult(
+                "Sistema inicializando... espera un momento.", error=True
+            )
+
         handler = self.commands.get(command)
+
         if handler:
             return handler(args)
         return CommandResult(f"Comando de juego '{command}' no válido.", error=True)
+
+    def set_current_node(self, node):
+        self.node_current = node
 
     def _ls(self, args: list[str]) -> CommandResult:
 
@@ -28,7 +42,7 @@ class GameInputState(TerminalState):
         output_formateado = "\n".join([nodo.name for nodo in result])
 
         return CommandResult(
-            output=f"Elementos de {self.node_current.name}:\n{output_formateado}"
+            output=f"Elementos de {self.node_current.name}:\n{output_formateado}"  # type: ignore
         )
 
     def _cd(self, args: list[str]) -> CommandResult:
@@ -38,14 +52,14 @@ class GameInputState(TerminalState):
 
         target_node_name = args[0]
 
-        result = navegation_node(self.node_current, target_node_name)
+        result = navegation_node(self.node_current, target_node_name)  # type: ignore
 
         if result is None:
             return CommandResult(
                 f"Directorio '{target_node_name}' no encontrado.", error=True
             )
 
-        self.node_current, path_str = result
+        self.node_current, path_str = result  # type: ignore
         return CommandResult(f"Ruta actual: {path_str}", path=f"{path_str}")
 
     def _cat(self, args: list[str]) -> CommandResult:

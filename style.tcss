@@ -1,0 +1,149 @@
+/* =========================================
+   ESTILO HACKER / TERMINAL - HackingNet
+   ========================================= */
+
+Screen {
+    background: #000000;
+    color: #00ff41;
+}
+
+TabbedContent {
+    background: #000000;
+    height: 1fr;
+}
+
+Tabs {
+    background: #0a0a0a;
+    color: #00ff41;
+}
+
+Tab {
+    color: #008f27;
+    text-style: bold;
+}
+
+Tab:hover {
+    color: #00ff41;
+    background: #0a1a0a;
+}
+
+Tab.-active {
+    color: #00ff41;
+    background: #001a00;
+    border-bottom: solid #00ff41;
+    text-style: bold underline;
+}
+
+TabPane {
+    background: #000000;
+    padding: 1 2;
+    height: 1fr;
+    overflow-y: auto;
+}
+
+/* --- Textos generales dentro de las pestañas --- */
+Static {
+    color: #00ff41;
+}
+
+/* --- Input estilo consola --- */
+#buscador_pestanas {
+    background: #000000;
+    color: #00ff41;
+    border: solid #00ff41;
+    dock: bottom;
+    margin-top: 1;
+}
+
+#buscador_pestanas:focus {
+    border: double #00ff88;
+    background: #001100;
+}
+
+/* --- Pestaña Red --- */
+#red {
+    border: round #008f27;
+    transition: border-color 900ms in_out_cubic;
+}
+
+/* --- Pestaña Perfil --- */
+#profile {
+    border: round #008f27;
+    transition: border-color 900ms in_out_cubic;
+}
+
+/* --- Pestaña Tienda --- */
+#tienda {
+    border: round #008f27;
+    transition: border-color 900ms in_out_cubic;
+}
+
+/* Clase que se activa/desactiva por código para crear el "glow" pulsante */
+#red.glow, #profile.glow, #tienda.glow {
+    border: round #00ff88;
+}
+
+/* --- Línea de escaneo --- */
+ScanLine {
+    width: 100%;
+    height: 1;
+    background: #00ff41 40%;
+    layer: overlay;
+    dock: top;
+}
+
+/* --- Grid de IPs disponibles --- */
+#grid_red {
+    grid-size: 4;               /* 4 columnas: IP, Firewall, Dificultad, Recompensa */
+    grid-columns: 16 12 14 12;  /* ancho fijo por columna */
+    grid-gutter: 0 2;
+    margin-top: 1;
+    margin-bottom: 1;
+    height: auto;
+}
+
+.header_red {
+    color: #00ff88;
+    text-style: bold underline;
+}
+
+.celda_red {
+    color: #00ff41;
+}
+
+/* --- Grid de la Tienda --- */
+#grid_tienda {
+    grid-size: 5;                    /* ID, Nombre, Tipo, Precio, Descripción */
+    grid-columns: 10 16 12 8 30;
+    grid-gutter: 0 2;
+    margin-top: 1;
+    margin-bottom: 1;
+    height: auto;
+}
+
+.header_tienda {
+    color: #00ff88;
+    text-style: bold underline;
+}
+
+.celda_tienda {
+    color: #00ff41;
+}
+
+#dinero_tienda {
+    margin-top: 1;
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+/* Notificaciones (self.notify) */
+Toast {
+    background: #001a00;
+    border: solid #00ff41;
+    color: #00ff41;
+}
+
+Toast.-error {
+    border: solid #ff3333;
+    color: #ff5555;
+}
